@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import CompanyService from "../service/CompanyService";
+import CompanyService from "../../../service/CompanyService";
 
 const EditCompany = props => {
   const [company, setCompany] = useState(props.currentCompany);
- 
+
   useEffect(() => {
     setCompany(props.currentCompany);
   }, [props]);
@@ -19,7 +19,7 @@ const EditCompany = props => {
       onSubmit={event => {
         event.preventDefault();
         CompanyService.updateCompany(company)
-        .then(()=>props.updateCompany());
+          .then(() => props.updateCompany());
       }}
     >
       <label>Name</label>

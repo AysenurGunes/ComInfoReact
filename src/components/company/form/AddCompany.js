@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import CompanyService from "../service/CompanyService";
+import CompanyService from "../../../service/CompanyService";
 
 const AddCompany = (props) => {
   const initialFormState = {
-   
+
     name: ''
-   
+
   };
   const [company, setCompany] = useState(initialFormState);
 
@@ -20,13 +20,13 @@ const AddCompany = (props) => {
         onSubmit={(event) => {
           event.preventDefault();
           if (!company.name) return;
-    try {
-      const result = CompanyService.addCompany(company)
-      .then(()=>props.addCompany())
-     
-    } catch (err) {
-      console.error('Gönderme hatası:', err);
-    }
+          try {
+            const result = CompanyService.addCompany(company)
+              .then(() => props.addCompany())
+
+          } catch (err) {
+            console.error('Gönderme hatası:', err);
+          }
           setCompany(initialFormState);
         }}
         className="needs-validation"

@@ -34,6 +34,13 @@ const Header = () => {
                     >
                         Şirketler
                     </Button>
+                    <Button
+                        component={Link}
+                        to="/employees"
+                        sx={navButtonStyle('/employees')}
+                    >
+                        Personeller
+                    </Button>
                 </Box>
 
             </Toolbar>

@@ -1,98 +1,84 @@
 import React, { useState } from 'react';
-import CompanyService from "../../../service/CompanyService";
+import {
+  Modal,
+  Box,
+  TextField,
+  Button,
+  Typography
+} from '@mui/material';
+import CompanyService from '../../../service/CompanyService'
 
-const AddCompany = (props) => {
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  borderRadius: 2,
+  boxShadow: 24,
+  p: 4,
+};
+
+const AddCompany = ({ open, onClose, getCompanies }) => {
+
   const initialFormState = {
-
     name: ''
-
   };
+
   const [company, setCompany] = useState(initialFormState);
+  const [error, setError] = useState(false);
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setCompany({ ...company, [name]: value });
+  const handleSubmit = () => {
+    if (company.name.trim() === '') {
+      setError(true);
+      return;
+    }
+
+    try {
+      CompanyService.addCompany(company).then(() => {
+        getCompanies();
+      })
+
+    } catch (err) {
+      console.error('Gönderme hatası:', err);
+    } finally {
+      setCompany(initialFormState);
+      setError(false);
+      onClose();
+    }
+
   };
 
+  const handleChange = (e) => {
+    setCompany({ name: e.target.value });
+    if (e.target.value.trim() !== '') setError(false);
+  };
   return (
-    <div>
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (!company.name) return;
-          try {
-            const result = CompanyService.addCompany(company)
-              .then(() => props.addCompany())
-
-          } catch (err) {
-            console.error('Gönderme hatası:', err);
-          }
-          setCompany(initialFormState);
-        }}
-        className="needs-validation"
-      >
-        <label htmlFor="Name">Name:</label>
-        <input
-          type="text"
-          name="name"
+    <Modal
+      open={open}
+      onClose={onClose}
+      aria-labelledby="create-company-modal"
+    >
+      <Box sx={style}>
+        <Typography variant="h6" component="h2" mb={2}>
+          Yeni Şirket Ekle
+        </Typography>
+        <TextField
+          label="Şirket Adı"
+          fullWidth
+          margin="normal"
           value={company.name}
-          onChange={handleInputChange}
-          className="form-control"
-          placeholder="Name"
-          required
+          onChange={(e) => handleChange(e)}
+          error={error}
+          helperText={error ? 'Şirket adı boş bırakılamaz' : ''}
         />
-        {/* <label htmlFor="Email">Email:</label>
-        <input
-          type="email"
-          name="email"
-          value={user.email}
-          onChange={handleInputChange}
-          className="form-control"
-          placeholder="Email"
-          required
-        /> */}
-        {/* <label htmlFor="Contact">Contact:</label>
-        <input
-          type="number"
-          name="contact"
-          value={user.contact}
-          onChange={handleInputChange}
-          className="form-control"
-          placeholder="Contact"
-          required
-        /> */}
-        {/* <br />
-        <label htmlFor="Email">Status:</label>
-        <div className="form-check">
-          <label className="form-check-label">
-            <input
-              type="radio"
-              className="form-check-input"
-              name="status"
-              value="Active"
-              onChange={handleInputChange}
-              checked
-            />
-            Active
-          </label>
-        </div> 
-        <div className="form-check">
-          <label className="form-check-label">
-            <input
-              type="radio"
-              className="form-check-input"
-              name="status"
-              value="Inactive"
-              onChange={handleInputChange}
-            />
-            Inactive
-          </label>
-        </div>*/}
-        <br />
-        <br />
-        <button className="btn btn-primary">Add new company</button>
-      </form>
-    </div>
+        <Box mt={2} display="flex" justifyContent="flex-end" gap={1}>
+          <Button onClick={onClose}>İptal</Button>
+          <Button variant="contained" onClick={handleSubmit}>Kaydet</Button>
+        </Box>
+      </Box>
+    </Modal>
   );
 };
 

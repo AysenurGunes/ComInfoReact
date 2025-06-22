@@ -1,94 +1,86 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import {
+  Modal,
+  Box,
+  Typography,
+  TextField,
+  Button
+} from '@mui/material';
 import CompanyService from "../../../service/CompanyService";
 
-const EditCompany = props => {
-  const [company, setCompany] = useState(props.currentCompany);
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  borderRadius: 2,
+  boxShadow: 24,
+  p: 4,
+};
+
+
+const EditCompany = ({ open, onClose, updateCompany, getCompanies }) => {
+  const [company, setCompany] = useState({ id: '', name: '' });
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    setCompany(props.currentCompany);
-  }, [props]);
+    if (updateCompany) {
+      setCompany({ id: updateCompany.id, name: updateCompany.name });
+      setError(false);
+    }
+  }, [updateCompany]);
 
-  const handleInputChange = event => {
-    const { name, value } = event.target;
-
-    setCompany({ ...company, [name]: value });
+  const handleChange = (e) => {
+    setCompany((prev) => ({ ...prev, name: e.target.value }));
+    if (e.target.value.trim() !== '') setError(false);
   };
 
+  const handleSubmit = () => {
+    
+    if (company.name.trim() === '') {
+      setError(true);
+      return;
+    }
+
+    try {
+      CompanyService.updateCompany(company).then(() => {
+        getCompanies();
+      })
+
+    } catch (err) {
+      console.error('Gönderme hatası:', err);
+    } finally {
+      onClose();
+    }
+  };
+
+  if (!company) return null;
+
   return (
-    <form
-      onSubmit={event => {
-        event.preventDefault();
-        CompanyService.updateCompany(company)
-          .then(() => props.updateCompany());
-      }}
-    >
-      <label>Name</label>
-      <input
-        type="text"
-        name="name"
-        value={company.name}
-        onChange={handleInputChange}
-        className="form-control"
-        placeholder="Name"
-        required
-      />
-      {/* <label>Email</label>
-      <input
-        type="text"
-        name="email"
-        value={user.email}
-        onChange={handleInputChange}
-        class="form-control"
-        placeholder="Email"
-        required
-      />
-      <label for="Contact">Contact:</label>
-      <input
-        type="text"
-        name="contact"
-        value={user.contact}
-        onChange={handleInputChange}
-        className="form-control"
-        placeholder="Contact"
-        required
-      />
-      <br />
-      <label htmlFor="Email">Status:</label>
-      <div className="form-check">
-        <label className="form-check-label">
-          <input
-            type="radio"
-            className="form-check-input"
-            name="status"
-            value="Active"
-            onChange={handleInputChange}
-            checked={checked}
-          />
-          Active
-        </label>
-      </div>
-      <div className="form-check">
-        <label className="form-check-label">
-          <input
-            type="radio"
-            className="form-check-input"
-            name="status"
-            value="Inactive"
-            onChange={handleInputChange}
-            checked={unchecked}
-          />
-          Inactive
-        </label>
-      </div> */}
-      <br />
-      <button className="button btn btn-primary">Update user</button>
-      <button
-        onClick={() => props.setEditing(false)}
-        className="button btn btn-secondary"
-      >
-        Cancel
-      </button>
-    </form>
+    <Modal open={open} onClose={onClose}>
+      <Box sx={modalStyle}>
+        <Typography variant="h6" mb={2}>
+          Şirketi Düzenle
+        </Typography>
+        <TextField
+          fullWidth
+          label="Şirket Adı"
+          value={company.name}
+          onChange={handleChange}
+          margin="normal"
+          error={error}
+          helperText={error ? 'Şirket adı boş bırakılamaz' : ''}
+        />
+        <Box mt={2} display="flex" justifyContent="flex-end" gap={1}>
+          <Button onClick={onClose}>İptal</Button>
+          <Button variant="contained" onClick={handleSubmit}>
+            Kaydet
+          </Button>
+        </Box>
+      </Box>
+    </Modal>
   );
 };
 

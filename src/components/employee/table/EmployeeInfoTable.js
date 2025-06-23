@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 
 import EmployeeService from "../../../service/EmployeeService";
-
+//employee iletişim bilgileri liste modalı
 const modalStyle = {
     position: 'absolute',
     top: '50%',

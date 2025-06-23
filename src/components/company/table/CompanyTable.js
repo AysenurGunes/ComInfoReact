@@ -14,7 +14,7 @@ import {
 import AddCompany from "../form/AddCompany";
 import CompanyService from "../../../service/CompanyService";
 import EditCompany from "../form/EditCompany";
-
+//company listeleme sayfası
 
 const CompanyTable = () => {
 

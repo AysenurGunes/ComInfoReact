@@ -1,4 +1,5 @@
 import axios from 'axios';
+//company api istek servisi
 const CompanyService = {
   getCompanies: async () => {
     try {

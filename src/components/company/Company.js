@@ -5,7 +5,7 @@ import {
     Typography,
     Paper
 } from '@mui/material';
-
+//company sayfası
 const Company = () => {
 
     return (

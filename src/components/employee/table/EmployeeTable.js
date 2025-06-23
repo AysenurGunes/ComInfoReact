@@ -16,7 +16,7 @@ import EditEmployee from "../form/EditEmployee";
 import EmployeeService from "../../../service/EmployeeService";
 import EmployeeInfoTable from "./EmployeeInfoTable";
 
-
+//employee sayfasının listeleme sayfası
 const EmployeeTable = () => {
 
   const [employees, setEmployee] = useState([]);

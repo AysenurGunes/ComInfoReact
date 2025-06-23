@@ -42,6 +42,7 @@ const EmployeeTable = () => {
   };
 
   const editRow = (employee) => {
+    console.log(employee)
     setSelectedEmployee(employee);
     setEditOpen(true);
   };

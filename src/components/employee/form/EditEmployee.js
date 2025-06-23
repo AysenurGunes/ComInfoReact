@@ -4,10 +4,12 @@ import {
   Box,
   Typography,
   TextField,
-  Button
+  Button,
+  Select,
+  MenuItem
 } from '@mui/material';
 import EmployeeService from '../../../service/EmployeeService';
-
+import  axios  from 'axios';
 const modalStyle = {
   position: 'absolute',
   top: '50%',
@@ -21,19 +23,27 @@ const modalStyle = {
 };
 
 const EditEmployee = ({ open, onClose, updateEmployee, getEmployees }) => {
-  const [employee, setEmployee] = useState({ id: '', name: '' });
+  const [employee, setEmployee] = useState({ id: '', name: '',companyId:null });
   const [error, setError] = useState(false);
+ const [companies, setCompanies] = useState([]);
 
   useEffect(() => {
     if (updateEmployee) {
-      setEmployee({ id: updateEmployee.id, name: updateEmployee.name });
+      setEmployee({ id: updateEmployee.id, name: updateEmployee.name , companyId:updateEmployee.companyId });
       setError(false);
     }
+     axios.get('http://localhost:5052/api/Company/GetAllCompany')
+      .then((res) => setCompanies(res.data))
+      .catch((err) => console.error(err));
   }, [updateEmployee]);
 
-  const handleChange = (e) => {
+  const handleChangeName = (e) => {
     setEmployee((prev) => ({ ...prev, name: e.target.value }));
     if (e.target.value.trim() !== '') setError(false);
+  };
+  const handleChangeCompanyId = (e) => {
+    setEmployee((prev) => ({ ...prev, companyId: e.target.value }));
+    if (e.target.value !== null) setError(false);
   };
 
   const handleSubmit = () => {
@@ -67,11 +77,25 @@ const EditEmployee = ({ open, onClose, updateEmployee, getEmployees }) => {
           fullWidth
           label="Personel Adı"
           value={employee.name}
-          onChange={handleChange}
+          onChange={handleChangeName}
           margin="normal"
           error={error}
           helperText={error ? 'personel adı boş bırakılamaz' : ''}
         />
+        <Select
+                labelId="company-select-label"
+                id="company-select"
+                value={employee.companyId}
+                defaultValue={employee.companyId}
+                label="Şirket Seç"
+                onChange={(e) => handleChangeCompanyId(e)}
+              >
+                {companies.map((company) => (
+                  <MenuItem key={company.id} value={company.id}>
+                    {company.name}
+                  </MenuItem>
+                ))}
+              </Select>
         <Box mt={2} display="flex" justifyContent="flex-end" gap={1}>
           <Button onClick={onClose}>İptal</Button>
           <Button variant="contained" onClick={handleSubmit}>
